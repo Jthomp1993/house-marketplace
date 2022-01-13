@@ -1,5 +1,7 @@
 import { useState, Fragment } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
+import { getAuth, createUserWithEmailAndPassword, updateProfile } from 'firebase/auth';
+import { db } from '../firebase.config';
 import { ReactComponent as ArrowRightIcon } from '../assets/svg/keyboardArrowRightIcon.svg';
 import visabilityIcon from '../assets/svg/visibilityIcon.svg';
 
@@ -23,13 +25,37 @@ function SignUp() {
         }))
     }
 
+    const onSubmit = async (e) => {
+        e.preventDefault();
+
+        try {
+            const auth = getAuth();
+
+            const userCredential = await createUserWithEmailAndPassword(
+                auth,
+                name,
+                password
+            )
+
+            const user = userCredential.user;
+
+            updateProfile(auth.currentUser, {
+                displayName: name
+            });
+            
+            navigate('/');
+        } catch (error) {
+            console.log(error);
+        }
+    }
+
     return (
         <Fragment>
             <div className="pageContainer">
                 <header>
                     <p className="pageHeader">Welcome Back!</p>
                 </header>
-                <form>
+                <form onSubmit={onSubmit}>
                     <input className="nameInput" type="text" placeholder="Name" id="name" value={name} onChange={onChange} />
                     <input className="emailInput" type="email" placeholder="Email" id="email" value={email} onChange={onChange} />
 
