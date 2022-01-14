@@ -1,6 +1,7 @@
 import { useState, Fragment } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { getAuth, createUserWithEmailAndPassword, updateProfile } from 'firebase/auth';
+import { doc, setDoc, serverTimestamp } from '@firebase/firestore';
 import { db } from '../firebase.config';
 import { ReactComponent as ArrowRightIcon } from '../assets/svg/keyboardArrowRightIcon.svg';
 import visabilityIcon from '../assets/svg/visibilityIcon.svg';
@@ -33,7 +34,7 @@ function SignUp() {
 
             const userCredential = await createUserWithEmailAndPassword(
                 auth,
-                name,
+                email,
                 password
             )
 
@@ -42,6 +43,11 @@ function SignUp() {
             updateProfile(auth.currentUser, {
                 displayName: name
             });
+
+            const formDataCopy = {...formData}
+            delete formDataCopy.password
+            formDataCopy.timestamp = serverTimestamp();
+            await setDoc(doc(db, 'users', user.uid), formDataCopy);
             
             navigate('/');
         } catch (error) {
@@ -70,7 +76,7 @@ function SignUp() {
                         <p className="signUpText">
                             Sign Up
                         </p>
-                        <button className="signUpButton">
+                        <button type="submit" className="signUpButton">
                             <ArrowRightIcon fill='#ffffff' width="34px" height="34px" />
                         </button>
                     </div>
