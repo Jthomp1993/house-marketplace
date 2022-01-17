@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, Fragment } from 'react';
 import { useParams } from 'react-router-dom';
 import { collection, getDocs, query, where, orderBy, limit, startAfter } from 'firebase/firestore';
 import { db } from '../firebase.config';
@@ -31,19 +31,40 @@ function Category() {
                 let listings = [];
 
                 querySnap.forEach((doc) => {
-                    console.log(doc.data());
+                    return listings.push({
+                        id: doc.id,
+                        data: doc.data()
+                    })
                 })
 
+                setListings(listings);
+                setLoading(false);
+
             } catch (error) {
-                console.log(error);
+                toast.error('Sorry we could not load the listings at the moment.')
             }
         }
         fetchListings();
-    })
+    }, [params.categoryName])
 
     return (
-        <div>
-            Category
+        <div className="category">
+            <header>
+                <p className="pageHeader">{params.categoryName === 'rent' ? 'Places for rent' : 'Places for sale'}</p>
+            </header>
+
+            {loading ? <Spinner /> : listings && listings.length > 0 ? 
+            (
+                <Fragment>
+                    <main>
+                        <ul className="categoryListings">
+                            {listings.map((listing) => (
+                                <h3 key={listing.id}>{listing.data.name}</h3>
+                            ))}
+                        </ul>
+                    </main>
+                </Fragment>) 
+            : <p>There are no listings for {params.categoryName} at the moment.</p>}
         </div>
     )
 }
