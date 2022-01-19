@@ -1,5 +1,6 @@
 import { getAuth, onAuthStateChanged } from 'firebase/auth';
 import { getStorage, ref, uploadBytesResumable, getDownloadURL } from "firebase/storage";
+import { addDoc, collection, serverTimestamp } from 'firebase/firestore';
 import { db } from '../firebase.config';
 import { v4 as uuidv4 } from 'uuid';
 import { useState, useEffect, useRef } from 'react';
@@ -182,9 +183,23 @@ function CreateListing() {
         });
 
         console.log(imageUrls);
-        console.log(db);
+        
+        const formDataCopy = {
+            ...formData,
+            imageUrls,
+            geolocation,
+            timestamp: serverTimestamp()
+        }
 
+        delete formDataCopy.images;
+        delete formDataCopy.address;
+        location && (formDataCopy.location = location);
+        !formDataCopy.offer && delete formDataCopy.discountedPrice;
+
+        const docRef = await addDoc(collection(db, 'listings'), formDataCopy);
         setLoading(false);
+        toast.success('Your listing has been created.');
+        navigate(`/category/${formDataCopy.type}/${docRef.id}`);
     }
 
     return (
