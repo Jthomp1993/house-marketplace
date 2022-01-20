@@ -80,6 +80,10 @@ function Profile() {
         }))
     }
 
+    const onEdit = (listingId) => {
+        navigate(`/edit-listing/${listingId}`);
+    }
+
     const onDelete = async (listingId) => {
         if(window.confirm('Are you sure you want to delete this listing?')) {
             await deleteDoc(doc(db, 'listings', listingId));
@@ -133,7 +137,7 @@ function Profile() {
                     <ul className="listingsList">
                         {listings.map((listing) => (
                             <ListingItem key={listing.id} listing={listing.data} id={listing.id}
-                            onDelete={() => onDelete(listing.id)} />
+                            onDelete={() => onDelete(listing.id)} onEdit={() => onEdit(listing.id)} />
                         ))}
                     </ul>
                 </Fragment>
