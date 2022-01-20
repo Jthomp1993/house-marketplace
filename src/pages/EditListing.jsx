@@ -1,6 +1,6 @@
 import { getAuth, onAuthStateChanged } from 'firebase/auth';
 import { getStorage, ref, uploadBytesResumable, getDownloadURL } from "firebase/storage";
-import { serverTimestamp, doc, updateDoc, getDoc, DocumentSnapshot } from 'firebase/firestore';
+import { serverTimestamp, doc, updateDoc, getDoc } from 'firebase/firestore';
 import { db } from '../firebase.config';
 import { v4 as uuidv4 } from 'uuid';
 import { useState, useEffect, useRef } from 'react';
@@ -11,6 +11,7 @@ import Spinner from '../components/Spinner';
 function EditListing() {
     const [loading, setLoading] = useState(false);
     const [listing, setListing] = useState(false);
+    // eslint-disable-next-line
     const [geolocationEnabled, setGeolocationEnabled] = useState(true);
     const [formData, setFormData] = useState({
         type: 'rent',
@@ -96,7 +97,7 @@ function EditListing() {
             isMounted.current = false;
         }
 
-        // es-lint-disable-next-line react-hooks/exhaustive-deps
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [isMounted])
 
     if(loading) {
@@ -188,6 +189,8 @@ function EditListing() {
                         break;
                     case 'running':
                         console.log('Upload is running');
+                        break;
+                    default:
                         break;
                     }
                 }, 

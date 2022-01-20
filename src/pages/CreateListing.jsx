@@ -10,6 +10,7 @@ import Spinner from '../components/Spinner';
 
 function CreateListing() {
     const [loading, setLoading] = useState(false);
+    // eslint-disable-next-line
     const [geolocationEnabled, setGeolocationEnabled] = useState(true);
     const [formData, setFormData] = useState({
         type: 'rent',
@@ -65,7 +66,7 @@ function CreateListing() {
             isMounted.current = false;
         }
 
-        // es-lint-disable-next-line react-hooks/exhaustive-deps
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [isMounted])
 
     if(loading) {
@@ -157,6 +158,8 @@ function CreateListing() {
                         break;
                     case 'running':
                         console.log('Upload is running');
+                        break;
+                    default:
                         break;
                     }
                 }, 
