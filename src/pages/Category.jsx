@@ -9,6 +9,7 @@ import ListingItem from '../components/ListingItem';
 function Category() {
     const [listings, setListings] = useState(null);
     const [loading, setLoading] = useState(true);
+    const [lastFetchedListing, setLastFetchedListing] = useState(null);
 
     const params = useParams();
 
@@ -29,6 +30,9 @@ function Category() {
                 // Execute query
                 const querySnap = await getDocs(q)
 
+                const lastVisable = querySnap.docs[querySnap.docs.length-1];
+                setLastFetchedListing(lastVisable);
+
                 let listings = [];
 
                 querySnap.forEach((doc) => {
@@ -48,6 +52,45 @@ function Category() {
         fetchListings();
     }, [params.categoryName])
 
+
+    // Pagination / Load more
+    const onFetchMoreListings = async () => {
+        try {
+            // Get reference
+            const listingsRef = collection(db, 'listings')
+
+            // Create a query
+            const q = query(
+            listingsRef,
+            where('type', '==', params.categoryName),
+            orderBy('timestamp', 'desc'),
+            startAfter(lastFetchedListing),
+            limit(10)
+            )
+
+            // Execute query
+            const querySnap = await getDocs(q)
+
+            const lastVisable = querySnap.docs[querySnap.docs.length-1];
+            setLastFetchedListing(lastVisable);
+
+            let listings = [];
+
+            querySnap.forEach((doc) => {
+                return listings.push({
+                    id: doc.id,
+                    data: doc.data()
+                })
+            })
+
+            setListings((prevState) => [...prevState, ...listings]);
+            setLoading(false);
+
+        } catch (error) {
+            toast.error('Sorry we could not load the listings at the moment.')
+        }
+    }
+
     return (
         <div className="category">
             <header>
@@ -64,6 +107,10 @@ function Category() {
                             ))}
                         </ul>
                     </main>
+
+                    {lastFetchedListing && (
+                        <p className="loadMore" onClick={onFetchMoreListings}>Load More</p>
+                    )}
                 </Fragment>) 
             : <p>There are no listings for {params.categoryName} at the moment.</p>}
         </div>
