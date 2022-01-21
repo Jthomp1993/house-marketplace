@@ -90,6 +90,10 @@ function SignUp() {
                 <Link to='/sign-in' className="registerLink">
                     Sign In Instead
                 </Link>
+
+                <Link to='/sign-in' className="registerLink">
+                    Sign In Instead
+                </Link>
             </div>
         </Fragment>
     )
